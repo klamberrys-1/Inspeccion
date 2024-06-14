@@ -7,11 +7,14 @@ const App = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [showTechoDetails, setShowTechoDetails] = useState(false);
   const [showParedDetails, setShowParedDetails] = useState(false);
+  const [showPisoDetails, setShowPisoDetails] = useState(false);
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.section}>
-       
+        <Text style={styles.header}>Datos del cliente</Text>
+        <Text style={styles.header}>Descripción de sectores</Text>
+        <Text style={styles.header}>Descripción del siniestro</Text>
       </View>
 
       <View style={styles.tabs}>
@@ -78,9 +81,23 @@ const App = () => {
       {showParedDetails && (
         <TextInput style={styles.input} placeholder="Descripción de la Pared" />
       )}
+
+      <TouchableOpacity onPress={() => setShowPisoDetails(!showPisoDetails)}>
+        <Text style={styles.label}>Piso</Text>
+      </TouchableOpacity>
+      {showPisoDetails && (
+        <View>
+          <Text style={styles.label}>Material del Piso</Text>
+          <TextInput style={styles.input} placeholder="Tipo de Material" />
+          <Text style={styles.label}>Dimensiones del Piso</Text>
+          <TextInput style={styles.input} placeholder="Largo" />
+          <TextInput style={styles.input} placeholder="Ancho" />
+        </View>
+      )}
     </ScrollView>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
