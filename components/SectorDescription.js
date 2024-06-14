@@ -11,12 +11,7 @@ const App = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.section}>
-        <Text style={styles.header}>Datos del cliente</Text>
-        <Text style={styles.header}>Descripción de sectores</Text>
-        <Text style={styles.header}>Descripción del siniestro</Text>
-      </View>
-
+   
       <View style={styles.tabs}>
         {['Piezas', 'Baños', 'Comedor', 'Garaje', 'Living'].map((category) => (
           <Button key={category} title={category} onPress={() => {
