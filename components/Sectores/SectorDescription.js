@@ -123,23 +123,12 @@ const App = () => {
   };
 
   const saveQRAsImage = async (qrImagesDirectory, fileName, imageSource) => {
-<<<<<<< HEAD
-    //Get folder
     const folder = await FileSystem.getInfoAsync(qrImagesDirectory);
 
-    // Check if folder does not exist, create one furthermore
-=======
-    const folder = await FileSystem.getInfoAsync(qrImagesDirectory);
-
->>>>>>> origin/Jean
     if (!folder.exists) {
       await FileSystem.makeDirectoryAsync(qrImagesDirectory);
     }
 
-<<<<<<< HEAD
-    // Write file into the source of program
-=======
->>>>>>> origin/Jean
     await FileSystem.writeAsStringAsync(
       qrImagesDirectory + fileName,
       imageSource,
@@ -149,13 +138,7 @@ const App = () => {
     );
     const ans = await FileSystem.getInfoAsync(qrImagesDirectory + fileName);
 
-<<<<<<< HEAD
-    // Make the file accessible through mobile phone
     FileSystem.getContentUriAsync(ans.uri).then((cUri) => {
-      //Open save image options
-=======
-    FileSystem.getContentUriAsync(ans.uri).then((cUri) => {
->>>>>>> origin/Jean
       IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
         data: cUri,
         flags: 1,
@@ -165,63 +148,27 @@ const App = () => {
 
   const saveDataToExcel = async (sectors) => {
     const { status } = await MediaLibrary.requestPermissionsAsync();
-  
+
     if (status !== 'granted') {
       alert('Se requieren permisos de almacenamiento para guardar el archivo.');
       return;
     }
-  
-    const wb = XLSX.utils.book_new();
-    const wsData = [];
-<<<<<<< HEAD
-  
-    // Encabezado inicial del Excel
-    wsData.push(["SECTOR", "Medidas", "", "", "", ""]);
-    wsData.push(["Característica", "Cantidad", "Precio Unitario", "Precio Total", "% Dcto.", "Total Determinado"]);
-  
+
+    // Leer la plantilla de Excel
+    const templateUri = FileSystem.documentDirectory + 'template.xlsx';
+    const template = await FileSystem.readAsStringAsync(templateUri, { encoding: FileSystem.EncodingType.Base64 });
+    const workbook = XLSX.read(template, { type: 'base64' });
+
+    // Seleccionar la primera hoja del libro
+    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+    const wsData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
     // Función para agregar filas de detalles a la tabla
-=======
-
-    wsData.push(["SECTOR", "Largo", "Ancho", "Alto", "Característica", "Cantidad", "Precio Unitario", "Precio Total", "% Dcto.", "Total Determinado"]);
-
->>>>>>> origin/Jean
     const addDetailRows = (details, category) => {
       Object.entries(details).forEach(([key, value]) => {
         if (typeof value === 'object') {
           Object.entries(value).forEach(([subKey, subValue]) => {
             const price = elementsData[category]?.[key]?.[subKey]?.precio || 0;
-<<<<<<< HEAD
-            const quantity = parseFloat(subValue) || 1;
-            const totalPrice = price * quantity;
-            wsData.push([subKey, quantity, price, totalPrice, "0%", totalPrice]);
-          });
-        } else {
-          const price = elementsData[category]?.[key]?.precio || 0;
-          const quantity = parseFloat(value) || 1;
-          const totalPrice = price * quantity;
-          wsData.push([key, quantity, price, totalPrice, "0%", totalPrice]);
-        }
-      });
-    };
-  
-    // Agregar datos de cada sector
-    sectors.forEach((sector) => {
-      // Agregar el encabezado del sector y las medidas
-      wsData.push([sector.category, `${sector.measurements.largo} x ${sector.measurements.ancho} x ${sector.measurements.alto}`, "", "", "", ""]);
-  
-      // Agregar los detalles de los elementos seleccionados
-      Object.keys(sector.details).forEach((category) => {
-        wsData.push([category]);  // Agregar el nombre del elemento como sub-encabezado
-        addDetailRows(sector.details[category], category);  // Agregar filas de detalles con precios
-      });
-  
-      wsData.push([]);  // Fila vacía para separar sectores
-    });
-  
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-    XLSX.utils.book_append_sheet(wb, ws, "Sectores");
-  
-=======
             const quantity = parseFloat(subValue.unidad) || 1;
             const totalPrice = price * quantity;
             wsData.push([null, null, null, null, subKey, quantity, price, totalPrice, "0%", totalPrice]);
@@ -235,7 +182,9 @@ const App = () => {
       });
     };
 
+    // Agregar datos de cada sector
     sectors.forEach((sector) => {
+      // Validar que las medidas sean números
       const largo = parseFloat(sector.measurements.largo);
       const ancho = parseFloat(sector.measurements.ancho);
       const alto = parseFloat(sector.measurements.alto);
@@ -245,23 +194,24 @@ const App = () => {
         return;
       }
 
+      // Agregar el encabezado del sector y las medidas en la misma fila
       wsData.push([sector.category, largo, ancho, alto, null, null, null, null, null, null]);
 
+      // Agregar los detalles de los elementos seleccionados
       Object.keys(sector.details).forEach((category) => {
-        wsData.push([null, null, null, null, category, null, null, null, null, null]);
-        addDetailRows(sector.details[category], category);
+        wsData.push([null, null, null, null, category, null, null, null, null, null]);  // Agregar el nombre del elemento como sub-encabezado
+        addDetailRows(sector.details[category], category);  // Agregar filas de detalles con precios
       });
 
-      wsData.push([]);
+      wsData.push([]);  // Fila vacía para separar sectores
     });
 
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-    XLSX.utils.book_append_sheet(wb, ws, "Sectores");
+    const newWorksheet = XLSX.utils.aoa_to_sheet(wsData);
+    workbook.Sheets[workbook.SheetNames[0]] = newWorksheet;
 
->>>>>>> origin/Jean
-    const wbout = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
+    const wbout = XLSX.write(workbook, { type: 'base64', bookType: 'xlsx' });
     const fileUri = FileSystem.documentDirectory + 'datos.xlsx';
-  
+
     try {
       await FileSystem.writeAsStringAsync(fileUri, wbout, { encoding: FileSystem.EncodingType.Base64 });
       saveQRAsImage(FileSystem.documentDirectory + 'Download/', 'datos.xlsx', wbout);
@@ -270,9 +220,6 @@ const App = () => {
       alert('Error al guardar el archivo: ' + error.message);
     }
   };
-  
-  
-  
 
   const renderDetail = (details) => {
     if (typeof details === 'object') {
