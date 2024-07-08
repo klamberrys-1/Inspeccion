@@ -60,27 +60,33 @@ const App = () => {
   };
 
   const handleDetailChange = (category, detail, value) => {
-    const categoryPath = category.split('.');
-    if (categoryPath.length === 2) {
-      setDetails((prevDetails) => ({
-        ...prevDetails,
-        [categoryPath[0]]: {
-          ...prevDetails[categoryPath[0]],
-          [categoryPath[1]]: {
-            ...prevDetails[categoryPath[0]][categoryPath[1]],
-            [detail]: value
-          }
+    const [mainCategory, subCategory] = category.split('.');
+    setDetails((prevDetails) => {
+      const updatedDetails = { ...prevDetails };
+
+      if (subCategory) {
+        if (!updatedDetails[mainCategory]) {
+          updatedDetails[mainCategory] = {};
         }
-      }));
-    } else {
-      setDetails((prevDetails) => ({
-        ...prevDetails,
-        [category]: {
-          ...prevDetails[category],
-          [detail]: value
+        if (!updatedDetails[mainCategory][subCategory]) {
+          updatedDetails[mainCategory][subCategory] = {};
         }
-      }));
-    }
+        updatedDetails[mainCategory][subCategory][detail] = {
+          ...elementsData[mainCategory]?.[subCategory]?.[detail],
+          unidad: value
+        };
+      } else {
+        if (!updatedDetails[category]) {
+          updatedDetails[category] = {};
+        }
+        updatedDetails[category][detail] = {
+          ...elementsData[category]?.[detail],
+          unidad: value
+        };
+      }
+
+      return updatedDetails;
+    });
   };
 
   const handleAddSector = () => {
@@ -91,7 +97,7 @@ const App = () => {
       pisoType,
       muroType,
       cieloType,
-      details,
+      details: JSON.parse(JSON.stringify(details)), // Crear una copia profunda de los detalles
     };
     setSectors([...sectors, newSector]);
     setMeasurements({ largo: '', ancho: '', alto: '' });
@@ -117,15 +123,23 @@ const App = () => {
   };
 
   const saveQRAsImage = async (qrImagesDirectory, fileName, imageSource) => {
+<<<<<<< HEAD
     //Get folder
     const folder = await FileSystem.getInfoAsync(qrImagesDirectory);
 
     // Check if folder does not exist, create one furthermore
+=======
+    const folder = await FileSystem.getInfoAsync(qrImagesDirectory);
+
+>>>>>>> origin/Jean
     if (!folder.exists) {
       await FileSystem.makeDirectoryAsync(qrImagesDirectory);
     }
 
+<<<<<<< HEAD
     // Write file into the source of program
+=======
+>>>>>>> origin/Jean
     await FileSystem.writeAsStringAsync(
       qrImagesDirectory + fileName,
       imageSource,
@@ -135,9 +149,13 @@ const App = () => {
     );
     const ans = await FileSystem.getInfoAsync(qrImagesDirectory + fileName);
 
+<<<<<<< HEAD
     // Make the file accessible through mobile phone
     FileSystem.getContentUriAsync(ans.uri).then((cUri) => {
       //Open save image options
+=======
+    FileSystem.getContentUriAsync(ans.uri).then((cUri) => {
+>>>>>>> origin/Jean
       IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
         data: cUri,
         flags: 1,
@@ -155,17 +173,24 @@ const App = () => {
   
     const wb = XLSX.utils.book_new();
     const wsData = [];
+<<<<<<< HEAD
   
     // Encabezado inicial del Excel
     wsData.push(["SECTOR", "Medidas", "", "", "", ""]);
     wsData.push(["Característica", "Cantidad", "Precio Unitario", "Precio Total", "% Dcto.", "Total Determinado"]);
   
     // Función para agregar filas de detalles a la tabla
+=======
+
+    wsData.push(["SECTOR", "Largo", "Ancho", "Alto", "Característica", "Cantidad", "Precio Unitario", "Precio Total", "% Dcto.", "Total Determinado"]);
+
+>>>>>>> origin/Jean
     const addDetailRows = (details, category) => {
       Object.entries(details).forEach(([key, value]) => {
         if (typeof value === 'object') {
           Object.entries(value).forEach(([subKey, subValue]) => {
             const price = elementsData[category]?.[key]?.[subKey]?.precio || 0;
+<<<<<<< HEAD
             const quantity = parseFloat(subValue) || 1;
             const totalPrice = price * quantity;
             wsData.push([subKey, quantity, price, totalPrice, "0%", totalPrice]);
@@ -196,6 +221,44 @@ const App = () => {
     const ws = XLSX.utils.aoa_to_sheet(wsData);
     XLSX.utils.book_append_sheet(wb, ws, "Sectores");
   
+=======
+            const quantity = parseFloat(subValue.unidad) || 1;
+            const totalPrice = price * quantity;
+            wsData.push([null, null, null, null, subKey, quantity, price, totalPrice, "0%", totalPrice]);
+          });
+        } else {
+          const price = elementsData[category]?.[key]?.precio || 0;
+          const quantity = parseFloat(value.unidad) || 1;
+          const totalPrice = price * quantity;
+          wsData.push([null, null, null, null, key, quantity, price, totalPrice, "0%", totalPrice]);
+        }
+      });
+    };
+
+    sectors.forEach((sector) => {
+      const largo = parseFloat(sector.measurements.largo);
+      const ancho = parseFloat(sector.measurements.ancho);
+      const alto = parseFloat(sector.measurements.alto);
+
+      if (isNaN(largo) || isNaN(ancho) || isNaN(alto)) {
+        Alert.alert("Error", "Las medidas deben ser números");
+        return;
+      }
+
+      wsData.push([sector.category, largo, ancho, alto, null, null, null, null, null, null]);
+
+      Object.keys(sector.details).forEach((category) => {
+        wsData.push([null, null, null, null, category, null, null, null, null, null]);
+        addDetailRows(sector.details[category], category);
+      });
+
+      wsData.push([]);
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    XLSX.utils.book_append_sheet(wb, ws, "Sectores");
+
+>>>>>>> origin/Jean
     const wbout = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
     const fileUri = FileSystem.documentDirectory + 'datos.xlsx';
   
@@ -214,11 +277,12 @@ const App = () => {
   const renderDetail = (details) => {
     if (typeof details === 'object') {
       return Object.entries(details).map(([key, value]) => (
-        typeof value === 'object' ? 
-          Object.entries(value).map(([subKey, subValue]) => (
-            <Text key={subKey}>{subKey}: {subValue}</Text>
-          )) :
-          <Text key={key}>{key}: {value}</Text>
+        value && (
+          <View key={key} style={sectorStyles.quantityContainer}>
+            <Text>{key}: {value.unidad}</Text>
+            <Text>Precio: {value.precio}</Text>
+          </View>
+        )
       ));
     }
     return <Text>{details}</Text>;
@@ -246,6 +310,7 @@ const App = () => {
             style={sectorStyles.input}
             placeholder="Largo"
             value={measurements.largo}
+            keyboardType="numeric"
             onChangeText={(text) => setMeasurements({ ...measurements, largo: text })}
           />
           <Text style={sectorStyles.label}>Ancho:</Text>
@@ -253,6 +318,7 @@ const App = () => {
             style={sectorStyles.input}
             placeholder="Ancho"
             value={measurements.ancho}
+            keyboardType="numeric"
             onChangeText={(text) => setMeasurements({ ...measurements, ancho: text })}
           />
           <Text style={sectorStyles.label}>Alto:</Text>
@@ -260,6 +326,7 @@ const App = () => {
             style={sectorStyles.input}
             placeholder="Alto"
             value={measurements.alto}
+            keyboardType="numeric"
             onChangeText={(text) => setMeasurements({ ...measurements, alto: text })}
           />
 
@@ -274,6 +341,57 @@ const App = () => {
               </View>
               {switches[category] && (
                 <View>
+                  {category === 'Fisuras' && (
+                    <View>
+                      {Object.keys(elementsData.Fisuras).map((detail) => (
+                        <View key={detail} style={sectorStyles.quantityContainer}>
+                          <Text>{detail}:</Text>
+                          <TextInput
+                            style={sectorStyles.quantityInput}
+                            placeholder="Cantidad"
+                            keyboardType="numeric"
+                            value={details?.Fisuras?.[detail]?.unidad || ''}
+                            onChangeText={(text) => handleDetailChange('Fisuras', detail, text)}
+                          />
+                          <Text>Precio: {elementsData.Fisuras[detail].precio}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                  {category === 'Artefactos' && (
+                    <View>
+                      {Object.keys(elementsData.Artefactos).map((detail) => (
+                        <View key={detail} style={sectorStyles.quantityContainer}>
+                          <Text>{detail}:</Text>
+                          <TextInput
+                            style={sectorStyles.quantityInput}
+                            placeholder="Cantidad"
+                            keyboardType="numeric"
+                            value={details?.Artefactos?.[detail]?.unidad || ''}
+                            onChangeText={(text) => handleDetailChange('Artefactos', detail, text)}
+                          />
+                          <Text>Precio: {elementsData.Artefactos[detail].precio}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                  {category === 'PicadoSuperficie' && (
+                    <View>
+                      {Object.keys(elementsData['Picado Superficie']).map((detail) => (
+                        <View key={detail} style={sectorStyles.quantityContainer}>
+                          <Text>{detail}:</Text>
+                          <TextInput
+                            style={sectorStyles.quantityInput}
+                            placeholder="Cantidad"
+                            keyboardType="numeric"
+                            value={details?.['Picado Superficie']?.[detail]?.unidad || ''}
+                            onChangeText={(text) => handleDetailChange('Picado Superficie', detail, text)}
+                          />
+                          <Text>Precio: {elementsData['Picado Superficie'][detail].precio}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
                   {category === 'Pisos' && (
                     <View>
                       <Text style={sectorStyles.label}>Tipo de Piso: {pisoType}</Text>
@@ -292,9 +410,10 @@ const App = () => {
                             style={sectorStyles.quantityInput}
                             placeholder="Cantidad"
                             keyboardType="numeric"
-                            value={details?.Pisos?.[pisoType]?.[detail] || ''}
+                            value={details?.Pisos?.[pisoType]?.[detail]?.unidad || ''}
                             onChangeText={(text) => handleDetailChange(`Pisos.${pisoType}`, detail, text)}
                           />
+                          <Text>Precio: {elementsData.Pisos[pisoType][detail].precio}</Text>
                         </View>
                       ))}
                     </View>
@@ -317,9 +436,10 @@ const App = () => {
                             style={sectorStyles.quantityInput}
                             placeholder="Cantidad"
                             keyboardType="numeric"
-                            value={details?.Muros?.[muroType]?.[detail] || ''}
+                            value={details?.Muros?.[muroType]?.[detail]?.unidad || ''}
                             onChangeText={(text) => handleDetailChange(`Muros.${muroType}`, detail, text)}
                           />
+                          <Text>Precio: {elementsData.Muros[muroType][detail].precio}</Text>
                         </View>
                       ))}
                     </View>
@@ -342,25 +462,10 @@ const App = () => {
                             style={sectorStyles.quantityInput}
                             placeholder="Cantidad"
                             keyboardType="numeric"
-                            value={details?.Cielos?.[cieloType]?.[detail] || ''}
+                            value={details?.Cielos?.[cieloType]?.[detail]?.unidad || ''}
                             onChangeText={(text) => handleDetailChange(`Cielos.${cieloType}`, detail, text)}
                           />
-                        </View>
-                      ))}
-                    </View>
-                  )}
-                  {(category === 'Fisuras' || category === 'Artefactos' || category === 'PicadoSuperficie') && (
-                    <View>
-                      {Object.keys(elementsData[category]).map((detail) => (
-                        <View key={detail} style={sectorStyles.quantityContainer}>
-                          <Text>{detail}:</Text>
-                          <TextInput
-                            style={sectorStyles.quantityInput}
-                            placeholder="Cantidad"
-                            keyboardType="numeric"
-                            value={details?.[category]?.[detail] || ''}
-                            onChangeText={(text) => handleDetailChange(category, detail, text)}
-                          />
+                          <Text>Precio: {elementsData.Cielos[cieloType][detail].precio}</Text>
                         </View>
                       ))}
                     </View>
@@ -369,7 +474,6 @@ const App = () => {
               )}
             </View>
           ))}
-
           <Button title="Agregar" onPress={handleAddSector} />
         </View>
       )}
@@ -380,15 +484,45 @@ const App = () => {
           <Text>Largo: {sector.measurements.largo}</Text>
           <Text>Ancho: {sector.measurements.ancho}</Text>
           <Text>Alto: {sector.measurements.alto}</Text>
-          {Object.keys(sector.switches).map((category) => (
-            sector.switches[category] && (
-              <View key={category}>
-                <Text>{category}:</Text>
-                {category === 'Pisos' && <Text>Tipo de Piso: {sector.pisoType}</Text>}
-                {renderDetail(sector.details[category])}
-              </View>
-            )
-          ))}
+          {sector.switches.Fisuras && (
+            <View>
+              <Text>Fisuras:</Text>
+              {renderDetail(sector.details.Fisuras)}
+            </View>
+          )}
+          {sector.switches.Artefactos && (
+            <View>
+              <Text>Artefactos:</Text>
+              {renderDetail(sector.details.Artefactos)}
+            </View>
+          )}
+          {sector.switches.PicadoSuperficie && (
+            <View>
+              <Text>PicadoSuperficie:</Text>
+              {renderDetail(sector.details['Picado Superficie'])}
+            </View>
+          )}
+          {sector.switches.Pisos && (
+            <View>
+              <Text>Pisos:</Text>
+              <Text>Tipo de Piso: {sector.pisoType}</Text>
+              {renderDetail(sector.details.Pisos[sector.pisoType])}
+            </View>
+          )}
+          {sector.switches.Muros && (
+            <View>
+              <Text>Muros:</Text>
+              <Text>Tipo de Muro: {sector.muroType}</Text>
+              {renderDetail(sector.details.Muros[sector.muroType])}
+            </View>
+          )}
+          {sector.switches.Cielos && (
+            <View>
+              <Text>Cielos:</Text>
+              <Text>Tipo de Cielo: {sector.cieloType}</Text>
+              {renderDetail(sector.details.Cielos[sector.cieloType])}
+            </View>
+          )}
         </View>
       ))}
 
