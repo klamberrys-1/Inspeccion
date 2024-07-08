@@ -1,106 +1,292 @@
 {
-    "Fisuras": {
-      "Reparación Fisura": ""
+  "Fisuras": {
+    "Reparación Fisura": {
+      "unidad": "",
+      "precio": 5000
+    }
+  },
+  "Artefactos": {
+    "Retiro artefactos": {
+      "unidad": "",
+      "precio": 3000
     },
-    "Artefactos": {
-      "Retiro artefactos": "",
-      "Reparación mueble dañado": "",
-      "Reinstalación artefactos": ""
+    "Reparación mueble dañado": {
+      "unidad": "",
+      "precio": 7000
     },
-    "Picado Superficie": {
-      "Picado de Superficie, despeje de cañerías": "",
-      "Suministro materiales, cañeria PPR fibra, coplas codos, reducciones, etc.": "",
-      "Compactado zonas de intervención": ""
+    "Reinstalación artefactos": {
+      "unidad": "",
+      "precio": 4000
+    }
+  },
+  "Picado Superficie": {
+    "Picado de Superficie, despeje de cañerías": {
+      "unidad": "",
+      "precio": 8000
     },
-    "Pisos": {
-      "Piso Cerámico": {
-        "Retiro revestimiento cerámica": "",
-        "Preparación de Superficie": "",
-        "Prov. E Instalación de cerámica": "",
-        "Fraguar Ceramico": ""
+    "Suministro materiales, cañeria PPR fibra, coplas codos, reducciones, etc.": {
+      "unidad": "",
+      "precio": 12000
+    },
+    "Compactado zonas de intervención": {
+      "unidad": "",
+      "precio": 5000
+    }
+  },
+  "Pisos": {
+    "Piso Cerámico": {
+      "Retiro revestimiento cerámica": {
+        "unidad": "",
+        "precio": 6000
       },
-      "Piso Porcelanato": {
-        "Retiro revestimiento porcelanato": "",
-        "Preparación de Superficie": "",
-        "Prov. E Instalación de porcelanato": "",
-        "Fraguar porcelanato": ""
+      "Preparación de Superficie": {
+        "unidad": "",
+        "precio": 7000
       },
-      "Piso Vinilico": {
-        "Retiro revestimiento vinilico": "",
-        "Preparación de Superficie": "",
-        "Prov. E Instalación de vinilico": ""
+      "Prov. E Instalación de cerámica": {
+        "unidad": "",
+        "precio": 15000
       },
-      "Piso Flotante": {
-        "Retiro Piso Flotante": "",
-        "Retiro Espuma Niveladora": "",
-        "Preparación de Superficie": "",
-        "Prov. E Instalación Espuma Niveladora": "",
-        "Prov. E Instalación Piso Flotante": ""
-      },
-      "Piso Alfombra": {
-        "Retiro Alfombra": "",
-        "Preparación de Superficie": "",
-        "Prov. E Instalación de Alfombra": ""
-      },
-      "Piso Madera": {
-        "Retiro Piso madera": "",
-        "Retiro Aislante": "",
-        "Preparación de Superficie": "",
-        "Prov. E Instalación Aislante": "",
-        "Prov. E Instalación Piso madera": "",
-        "Aplicación protector y Vitrificado": ""
-      },
-      "Piso Pasto": {
-        "Retiro pasto": "",
-        "Preparación de Superficie": "",
-        "Prov. E instalación de Pasto en rollo": ""
+      "Fraguar Ceramico": {
+        "unidad": "",
+        "precio": 5000
       }
     },
-    "Guardapolvos": {
-      "Retiro Guardapolvos": "",
-      "Prov. E Inst. Guardapolvos": ""
-    },
-    "Muros": {
-      "Muro Cerámico": {
-        "Retiro Ceramica": "",
-        "Preparación de Superficie": "",
-        "Prov. E Inst. Ceramicos": "",
-        "Frague": ""
+    "Piso Porcelanato": {
+      "Retiro revestimiento porcelanato": {
+        "unidad": "",
+        "precio": 7000
       },
-      "Muro Papel": {
-        "Retiro Rev. Papel": "",
-        "Preparación de Superficie": "",
-        "Prov. e Instalación Papel": ""
+      "Preparación de Superficie": {
+        "unidad": "",
+        "precio": 8000
       },
-      "Muro Volcanita": {
-        "Retiro Rev. Volcanita": "",
-        "Prov. e Instalación Volcanita": "",
-        "Huincha, Empaste y Lijado": "",
-        "Preparación de Superficie": "",
-        "Aplicación de Pintura de Terminación esmalte al Agua": ""
+      "Prov. E Instalación de porcelanato": {
+        "unidad": "",
+        "precio": 20000
       },
-      "Revestimiento Texturado": {
-        "Preparación de Superficie": "",
-        "Aplicación de Texturado Martelina": ""
-      },
-      "Muro Albañileria": {
-        "Preparación de Superficie": "",
-        "Empaste y Lijado": "",
-        "Aplicación de Pintura de Terminación esmalte al Agua": ""
-      },
-      "Muro Terciado Ranurado": {
-        "Retiro Revestimiento": "",
-        "Prov. e Instalación Revestimiento": "",
-        "Empaste y Lijado": "",
-        "Preparación de Superficie": "",
-        "Aplicación de Terminación esmalte": ""
+      "Fraguar porcelanato": {
+        "unidad": "",
+        "precio": 6000
       }
     },
-    "Cielos": {
-      "Cielo Losa": {
-        "Raspado, Empaste y Lijado de Cielo": "",
-        "Preparación de Superficie Cielo": "",
-        "Aplicación de Pintura de Terminación esmalte al Agua Cielo": ""
+    "Piso Vinilico": {
+      "Retiro revestimiento vinilico": {
+        "unidad": "",
+        "precio": 5000
+      },
+      "Preparación de Superficie": {
+        "unidad": "",
+        "precio": 6000
+      },
+      "Prov. E Instalación de vinilico": {
+        "unidad": "",
+        "precio": 12000
+      }
+    },
+    "Piso Flotante": {
+      "Retiro Piso Flotante": {
+        "unidad": "",
+        "precio": 4000
+      },
+      "Retiro Espuma Niveladora": {
+        "unidad": "",
+        "precio": 3000
+      },
+      "Preparación de Superficie": {
+        "unidad": "",
+        "precio": 6000
+      },
+      "Prov. E Instalación Espuma Niveladora": {
+        "unidad": "",
+        "precio": 5000
+      },
+      "Prov. E Instalación Piso Flotante": {
+        "unidad": "",
+        "precio": 14000
+      }
+    },
+    "Piso Alfombra": {
+      "Retiro Alfombra": {
+        "unidad": "",
+        "precio": 3000
+      },
+      "Preparación de Superficie": {
+        "unidad": "",
+        "precio": 4000
+      },
+      "Prov. E Instalación de Alfombra": {
+        "unidad": "",
+        "precio": 10000
+      }
+    },
+    "Piso Madera": {
+      "Retiro Piso madera": {
+        "unidad": "",
+        "precio": 5000
+      },
+      "Retiro Aislante": {
+        "unidad": "",
+        "precio": 4000
+      },
+      "Preparación de Superficie": {
+        "unidad": "",
+        "precio": 8000
+      },
+      "Prov. E Instalación Aislante": {
+        "unidad": "",
+        "precio": 7000
+      },
+      "Prov. E Instalación Piso madera": {
+        "unidad": "",
+        "precio": 20000
+      },
+      "Aplicación protector y Vitrificado": {
+        "unidad": "",
+        "precio": 10000
+      }
+    },
+    "Piso Pasto": {
+      "Retiro pasto": {
+        "unidad": "",
+        "precio": 2000
+      },
+      "Preparación de Superficie": {
+        "unidad": "",
+        "precio": 3000
+      },
+      "Prov. E instalación de Pasto en rollo": {
+        "unidad": "",
+        "precio": 8000
+      }
+    }
+  },
+  "Guardapolvos": {
+    "Retiro Guardapolvos": {
+      "unidad": "",
+      "precio": 2000
+    },
+    "Prov. E Inst. Guardapolvos": {
+      "unidad": "",
+      "precio": 5000
+    }
+  },
+  "Muros": {
+    "Muro Cerámico": {
+      "Retiro Ceramica": {
+        "unidad": "",
+        "precio": 6000
+      },
+      "Preparación de Superficie": {
+        "unidad": "",
+        "precio": 7000
+      },
+      "Prov. E Inst. Ceramicos": {
+        "unidad": "",
+        "precio": 15000
+      },
+      "Frague": {
+        "unidad": "",
+        "precio": 5000
+      }
+    },
+    "Muro Papel": {
+      "Retiro Rev. Papel": {
+        "unidad": "",
+        "precio": 3000
+      },
+      "Preparación de Superficie": {
+        "unidad": "",
+        "precio": 4000
+      },
+      "Prov. e Instalación Papel": {
+        "unidad": "",
+        "precio": 10000
+      }
+    },
+    "Muro Volcanita": {
+      "Retiro Rev. Volcanita": {
+        "unidad": "",
+        "precio": 5000
+      },
+      "Prov. e Instalación Volcanita": {
+        "unidad": "",
+        "precio": 12000
+      },
+      "Huincha, Empaste y Lijado": {
+        "unidad": "",
+        "precio": 7000
+      },
+      "Preparación de Superficie": {
+        "unidad": "",
+        "precio": 8000
+      },
+      "Aplicación de Pintura de Terminación esmalte al Agua": {
+        "unidad": "",
+        "precio": 9000
+      }
+    },
+    "Revestimiento Texturado": {
+      "Preparación de Superficie": {
+        "unidad": "",
+        "precio": 4000
+      },
+      "Aplicación de Texturado Martelina": {
+        "unidad": "",
+        "precio": 10000
+      }
+    },
+    "Muro Albañileria": {
+      "Preparación de Superficie": {
+        "unidad": "",
+        "precio": 5000
+      },
+      "Empaste y Lijado": {
+        "unidad": "",
+        "precio": 6000
+      },
+      "Aplicación de Pintura de Terminación esmalte al Agua": {
+        "unidad": "",
+        "precio": 9000
+      }
+    },
+    "Muro Terciado Ranurado": {
+      "Retiro Revestimiento": {
+        "unidad": "",
+        "precio": 3000
+      },
+      "Prov. e Instalación Revestimiento": {
+        "unidad": "",
+        "precio": 8000
+      },
+      "Empaste y Lijado": {
+        "unidad": "",
+        "precio": 6000
+      },
+      "Preparación de Superficie": {
+        "unidad": "",
+        "precio": 7000
+      },
+      "Aplicación de Terminación esmalte": {
+        "unidad": "",
+        "precio": 9000
+      }
+    }
+  },
+  "Cielos": {
+    "Cielo Losa": {
+      "Raspado, Empaste y Lijado de Cielo": {
+        "unidad": "",
+        "precio": 8000
+      },
+      "Preparación de Superficie Cielo": {
+        "unidad": "",
+        "precio": 7000
+      },
+      "Aplicación de Pintura de Terminación esmalte al Agua Cielo": {
+        "unidad": "",
+        "precio": 9000
       }
     }
   }
+}
