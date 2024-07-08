@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TextInput, ScrollView, Button, TouchableOpacity, View, Switch } from 'react-native';
+import { StyleSheet, Text, TextInput, ScrollView, Button, TouchableOpacity, View, Switch, Alert } from 'react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
 import * as FileSystem from 'expo-file-system';
 import * as XLSX from 'xlsx';
 import * as MediaLibrary from 'expo-media-library';
+import * as IntentLauncher from 'expo-intent-launcher';  // Asegúrate de instalar expo-intent-launcher
 
 // Import JSON data
 import elementsData from './elements.json';
@@ -115,71 +116,100 @@ const App = () => {
     });
   };
 
+  const saveQRAsImage = async (qrImagesDirectory, fileName, imageSource) => {
+    //Get folder
+    const folder = await FileSystem.getInfoAsync(qrImagesDirectory);
+
+    // Check if folder does not exist, create one furthermore
+    if (!folder.exists) {
+      await FileSystem.makeDirectoryAsync(qrImagesDirectory);
+    }
+
+    // Write file into the source of program
+    await FileSystem.writeAsStringAsync(
+      qrImagesDirectory + fileName,
+      imageSource,
+      {
+        encoding: FileSystem.EncodingType.Base64,
+      }
+    );
+    const ans = await FileSystem.getInfoAsync(qrImagesDirectory + fileName);
+
+    // Make the file accessible through mobile phone
+    FileSystem.getContentUriAsync(ans.uri).then((cUri) => {
+      //Open save image options
+      IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
+        data: cUri,
+        flags: 1,
+      });
+    });
+  };
+
   const saveDataToExcel = async (sectors) => {
     const { status } = await MediaLibrary.requestPermissionsAsync();
-
+  
     if (status !== 'granted') {
       alert('Se requieren permisos de almacenamiento para guardar el archivo.');
       return;
     }
-
+  
     const wb = XLSX.utils.book_new();
-
+    const wsData = [];
+  
+    // Encabezado inicial del Excel
+    wsData.push(["SECTOR", "Medidas", "", "", "", ""]);
+    wsData.push(["Característica", "Cantidad", "Precio Unitario", "Precio Total", "% Dcto.", "Total Determinado"]);
+  
+    // Función para agregar filas de detalles a la tabla
+    const addDetailRows = (details, category) => {
+      Object.entries(details).forEach(([key, value]) => {
+        if (typeof value === 'object') {
+          Object.entries(value).forEach(([subKey, subValue]) => {
+            const price = elementsData[category]?.[key]?.[subKey]?.precio || 0;
+            const quantity = parseFloat(subValue) || 1;
+            const totalPrice = price * quantity;
+            wsData.push([subKey, quantity, price, totalPrice, "0%", totalPrice]);
+          });
+        } else {
+          const price = elementsData[category]?.[key]?.precio || 0;
+          const quantity = parseFloat(value) || 1;
+          const totalPrice = price * quantity;
+          wsData.push([key, quantity, price, totalPrice, "0%", totalPrice]);
+        }
+      });
+    };
+  
+    // Agregar datos de cada sector
     sectors.forEach((sector) => {
-      const wsData = [];
-
       // Agregar el encabezado del sector y las medidas
-      const header = [
-        ["SECTOR", `${sector.measurements.largo} x ${sector.measurements.ancho} x ${sector.measurements.alto}`],
-      ];
-      wsData.push(...header);
-
-      // Agregar encabezados de la tabla
-      const tableHeader = [
-        ["Unidad", "Cant. Real", "Prec. Unit.", "Prec. Total", "% Dcto.", "Total Determinado"]
-      ];
-      wsData.push(...tableHeader);
-
-      // Función para agregar filas de detalles a la tabla
-      const addDetailRows = (details, unit) => {
-        Object.entries(details).forEach(([key, value]) => {
-          if (typeof value === 'object') {
-            Object.entries(value).forEach(([subKey, subValue]) => {
-              wsData.push([unit, subValue, "Precio Unitario", "Precio Total", "0%", "Total Determinado"]);
-            });
-          } else {
-            wsData.push([unit, value, "Precio Unitario", "Precio Total", "0%", "Total Determinado"]);
-          }
-        });
-      };
-
+      wsData.push([sector.category, `${sector.measurements.largo} x ${sector.measurements.ancho} x ${sector.measurements.alto}`, "", "", "", ""]);
+  
       // Agregar los detalles de los elementos seleccionados
       Object.keys(sector.details).forEach((category) => {
         wsData.push([category]);  // Agregar el nombre del elemento como sub-encabezado
-        addDetailRows(sector.details[category], "Unidad");  // Ajusta "Unidad" según sea necesario
+        addDetailRows(sector.details[category], category);  // Agregar filas de detalles con precios
       });
-
-      const ws = XLSX.utils.aoa_to_sheet(wsData);
-      XLSX.utils.book_append_sheet(wb, ws, sector.category);
+  
+      wsData.push([]);  // Fila vacía para separar sectores
     });
-
+  
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    XLSX.utils.book_append_sheet(wb, ws, "Sectores");
+  
     const wbout = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
     const fileUri = FileSystem.documentDirectory + 'datos.xlsx';
-
+  
     try {
       await FileSystem.writeAsStringAsync(fileUri, wbout, { encoding: FileSystem.EncodingType.Base64 });
-      const asset = await MediaLibrary.createAssetAsync(fileUri);
-      const album = await MediaLibrary.getAlbumAsync('Download');
-      if (album == null) {
-        await MediaLibrary.createAlbumAsync('Download', asset, false);
-      } else {
-        await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
-      }
+      saveQRAsImage(FileSystem.documentDirectory + 'Download/', 'datos.xlsx', wbout);
       alert('Datos guardados en la carpeta de Descargas');
     } catch (error) {
       alert('Error al guardar el archivo: ' + error.message);
     }
   };
+  
+  
+  
 
   const renderDetail = (details) => {
     if (typeof details === 'object') {
