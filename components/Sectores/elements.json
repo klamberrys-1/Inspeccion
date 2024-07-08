@@ -1,0 +1,106 @@
+{
+    "Fisuras": {
+      "Reparación Fisura": ""
+    },
+    "Artefactos": {
+      "Retiro artefactos": "",
+      "Reparación mueble dañado": "",
+      "Reinstalación artefactos": ""
+    },
+    "Picado Superficie": {
+      "Picado de Superficie, despeje de cañerías": "",
+      "Suministro materiales, cañeria PPR fibra, coplas codos, reducciones, etc.": "",
+      "Compactado zonas de intervención": ""
+    },
+    "Pisos": {
+      "Piso Cerámico": {
+        "Retiro revestimiento cerámica": "",
+        "Preparación de Superficie": "",
+        "Prov. E Instalación de cerámica": "",
+        "Fraguar Ceramico": ""
+      },
+      "Piso Porcelanato": {
+        "Retiro revestimiento porcelanato": "",
+        "Preparación de Superficie": "",
+        "Prov. E Instalación de porcelanato": "",
+        "Fraguar porcelanato": ""
+      },
+      "Piso Vinilico": {
+        "Retiro revestimiento vinilico": "",
+        "Preparación de Superficie": "",
+        "Prov. E Instalación de vinilico": ""
+      },
+      "Piso Flotante": {
+        "Retiro Piso Flotante": "",
+        "Retiro Espuma Niveladora": "",
+        "Preparación de Superficie": "",
+        "Prov. E Instalación Espuma Niveladora": "",
+        "Prov. E Instalación Piso Flotante": ""
+      },
+      "Piso Alfombra": {
+        "Retiro Alfombra": "",
+        "Preparación de Superficie": "",
+        "Prov. E Instalación de Alfombra": ""
+      },
+      "Piso Madera": {
+        "Retiro Piso madera": "",
+        "Retiro Aislante": "",
+        "Preparación de Superficie": "",
+        "Prov. E Instalación Aislante": "",
+        "Prov. E Instalación Piso madera": "",
+        "Aplicación protector y Vitrificado": ""
+      },
+      "Piso Pasto": {
+        "Retiro pasto": "",
+        "Preparación de Superficie": "",
+        "Prov. E instalación de Pasto en rollo": ""
+      }
+    },
+    "Guardapolvos": {
+      "Retiro Guardapolvos": "",
+      "Prov. E Inst. Guardapolvos": ""
+    },
+    "Muros": {
+      "Muro Cerámico": {
+        "Retiro Ceramica": "",
+        "Preparación de Superficie": "",
+        "Prov. E Inst. Ceramicos": "",
+        "Frague": ""
+      },
+      "Muro Papel": {
+        "Retiro Rev. Papel": "",
+        "Preparación de Superficie": "",
+        "Prov. e Instalación Papel": ""
+      },
+      "Muro Volcanita": {
+        "Retiro Rev. Volcanita": "",
+        "Prov. e Instalación Volcanita": "",
+        "Huincha, Empaste y Lijado": "",
+        "Preparación de Superficie": "",
+        "Aplicación de Pintura de Terminación esmalte al Agua": ""
+      },
+      "Revestimiento Texturado": {
+        "Preparación de Superficie": "",
+        "Aplicación de Texturado Martelina": ""
+      },
+      "Muro Albañileria": {
+        "Preparación de Superficie": "",
+        "Empaste y Lijado": "",
+        "Aplicación de Pintura de Terminación esmalte al Agua": ""
+      },
+      "Muro Terciado Ranurado": {
+        "Retiro Revestimiento": "",
+        "Prov. e Instalación Revestimiento": "",
+        "Empaste y Lijado": "",
+        "Preparación de Superficie": "",
+        "Aplicación de Terminación esmalte": ""
+      }
+    },
+    "Cielos": {
+      "Cielo Losa": {
+        "Raspado, Empaste y Lijado de Cielo": "",
+        "Preparación de Superficie Cielo": "",
+        "Aplicación de Pintura de Terminación esmalte al Agua Cielo": ""
+      }
+    }
+  }

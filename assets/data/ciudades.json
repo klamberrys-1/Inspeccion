@@ -1,0 +1,27 @@
+{
+    "Arica y Parinacota": [
+      { "label": "Arica", "value": "Arica" },
+      { "label": "Camarones", "value": "Camarones" },
+      { "label": "Putre", "value": "Putre" },
+      { "label": "General Lagos", "value": "General Lagos" }
+    ],
+    "Tarapacá": [
+      { "label": "Iquique", "value": "Iquique" },
+      { "label": "Alto Hospicio", "value": "Alto Hospicio" },
+      { "label": "Pozo Almonte", "value": "Pozo Almonte" },
+      { "label": "Pica", "value": "Pica" }
+    ],
+    "Araucanía": [
+      { "label": "Temuco", "value": "Temuco" },
+      { "label": "Padre Las Casas", "value": "Padre Las Casas" },
+      { "label": "Angol", "value": "Angol" },
+      { "label": "Villarrica", "value": "Villarrica" }
+    ],
+    "Biobío": [
+      { "label": "Concepción", "value": "Concepción" },
+      { "label": "Talcahuano", "value": "Talcahuano" },
+      { "label": "Chillán", "value": "Chillán" },
+      { "label": "Los Ángeles", "value": "Los Ángeles" }
+    ]
+  }
+  
