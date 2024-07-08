@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, TextInput, ScrollView, Button, TouchableOpacity, View, Switch } from 'react-native';
+import { StyleSheet, Text, TextInput, ScrollView, Button, TouchableOpacity, View, Switch, Alert } from 'react-native';
 import ModalDropdown from 'react-native-modal-dropdown';
+import * as FileSystem from 'expo-file-system';
+import * as XLSX from 'xlsx';
+import * as MediaLibrary from 'expo-media-library';
+import * as IntentLauncher from 'expo-intent-launcher';  // Asegúrate de instalar expo-intent-launcher
 
 // Import JSON data
 import elementsData from './elements.json';
@@ -118,13 +122,103 @@ const App = () => {
     });
   };
 
+  const saveQRAsImage = async (qrImagesDirectory, fileName, imageSource) => {
+    const folder = await FileSystem.getInfoAsync(qrImagesDirectory);
+
+    if (!folder.exists) {
+      await FileSystem.makeDirectoryAsync(qrImagesDirectory);
+    }
+
+    await FileSystem.writeAsStringAsync(
+      qrImagesDirectory + fileName,
+      imageSource,
+      {
+        encoding: FileSystem.EncodingType.Base64,
+      }
+    );
+    const ans = await FileSystem.getInfoAsync(qrImagesDirectory + fileName);
+
+    FileSystem.getContentUriAsync(ans.uri).then((cUri) => {
+      IntentLauncher.startActivityAsync("android.intent.action.VIEW", {
+        data: cUri,
+        flags: 1,
+      });
+    });
+  };
+
+  const saveDataToExcel = async (sectors) => {
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+
+    if (status !== 'granted') {
+      alert('Se requieren permisos de almacenamiento para guardar el archivo.');
+      return;
+    }
+
+    const wb = XLSX.utils.book_new();
+    const wsData = [];
+
+    wsData.push(["SECTOR", "Largo", "Ancho", "Alto", "Característica", "Cantidad", "Precio Unitario", "Precio Total", "% Dcto.", "Total Determinado"]);
+
+    const addDetailRows = (details, category) => {
+      Object.entries(details).forEach(([key, value]) => {
+        if (typeof value === 'object') {
+          Object.entries(value).forEach(([subKey, subValue]) => {
+            const price = elementsData[category]?.[key]?.[subKey]?.precio || 0;
+            const quantity = parseFloat(subValue.unidad) || 1;
+            const totalPrice = price * quantity;
+            wsData.push([null, null, null, null, subKey, quantity, price, totalPrice, "0%", totalPrice]);
+          });
+        } else {
+          const price = elementsData[category]?.[key]?.precio || 0;
+          const quantity = parseFloat(value.unidad) || 1;
+          const totalPrice = price * quantity;
+          wsData.push([null, null, null, null, key, quantity, price, totalPrice, "0%", totalPrice]);
+        }
+      });
+    };
+
+    sectors.forEach((sector) => {
+      const largo = parseFloat(sector.measurements.largo);
+      const ancho = parseFloat(sector.measurements.ancho);
+      const alto = parseFloat(sector.measurements.alto);
+
+      if (isNaN(largo) || isNaN(ancho) || isNaN(alto)) {
+        Alert.alert("Error", "Las medidas deben ser números");
+        return;
+      }
+
+      wsData.push([sector.category, largo, ancho, alto, null, null, null, null, null, null]);
+
+      Object.keys(sector.details).forEach((category) => {
+        wsData.push([null, null, null, null, category, null, null, null, null, null]);
+        addDetailRows(sector.details[category], category);
+      });
+
+      wsData.push([]);
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    XLSX.utils.book_append_sheet(wb, ws, "Sectores");
+
+    const wbout = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
+    const fileUri = FileSystem.documentDirectory + 'datos.xlsx';
+
+    try {
+      await FileSystem.writeAsStringAsync(fileUri, wbout, { encoding: FileSystem.EncodingType.Base64 });
+      saveQRAsImage(FileSystem.documentDirectory + 'Download/', 'datos.xlsx', wbout);
+      alert('Datos guardados en la carpeta de Descargas');
+    } catch (error) {
+      alert('Error al guardar el archivo: ' + error.message);
+    }
+  };
+
   const renderDetail = (details) => {
     if (typeof details === 'object') {
       return Object.entries(details).map(([key, value]) => (
         value && (
           <View key={key} style={sectorStyles.quantityContainer}>
             <Text>{key}: {value.unidad}</Text>
-            <Text>$: {value.precio} unit</Text>
+            <Text>Precio: {value.precio}</Text>
           </View>
         )
       ));
@@ -154,6 +248,7 @@ const App = () => {
             style={sectorStyles.input}
             placeholder="Largo"
             value={measurements.largo}
+            keyboardType="numeric"
             onChangeText={(text) => setMeasurements({ ...measurements, largo: text })}
           />
           <Text style={sectorStyles.label}>Ancho:</Text>
@@ -161,6 +256,7 @@ const App = () => {
             style={sectorStyles.input}
             placeholder="Ancho"
             value={measurements.ancho}
+            keyboardType="numeric"
             onChangeText={(text) => setMeasurements({ ...measurements, ancho: text })}
           />
           <Text style={sectorStyles.label}>Alto:</Text>
@@ -168,6 +264,7 @@ const App = () => {
             style={sectorStyles.input}
             placeholder="Alto"
             value={measurements.alto}
+            keyboardType="numeric"
             onChangeText={(text) => setMeasurements({ ...measurements, alto: text })}
           />
 
@@ -366,6 +463,8 @@ const App = () => {
           )}
         </View>
       ))}
+
+      <Button title="Guardar en Excel" onPress={() => saveDataToExcel(sectors)} />
     </ScrollView>
   );
 };
