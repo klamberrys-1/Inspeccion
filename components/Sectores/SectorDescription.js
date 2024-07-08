@@ -1,87 +1,27 @@
-import * as XLSX from 'xlsx';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, TextInput, ScrollView, Button, TouchableOpacity, View, Switch } from 'react-native';
+import ModalDropdown from 'react-native-modal-dropdown';
 import * as FileSystem from 'expo-file-system';
+import * as XLSX from 'xlsx';
 import * as MediaLibrary from 'expo-media-library';
 
-const saveDataToExcel = async (sectors) => {
-  const { status } = await MediaLibrary.requestPermissionsAsync();
+// Import JSON data
+import elementsData from './elements.json';
 
-  if (status !== 'granted') {
-    alert('Se requieren permisos de almacenamiento para guardar el archivo.');
-    return;
-  }
-
-  const wb = XLSX.utils.book_new();
-
-  sectors.forEach((sector) => {
-    const wsData = [];
-
-    // Agregar el encabezado del sector y las medidas
-    const header = [
-      ["SECTOR", `${sector.measurements.largo} x ${sector.measurements.ancho} x ${sector.measurements.alto}`],
-    ];
-    wsData.push(...header);
-    wsData.push([]);
-
-    // Agregar encabezados de la tabla
-    const tableHeader = [
-      ["Unidad", "Cant. Real", "Prec. Unit.", "Prec. Total", "% Dcto.", "Total Determinado"]
-    ];
-    wsData.push(...tableHeader);
-
-    // Función para agregar filas de detalles a la tabla
-    const addDetailRows = (details, unit) => {
-      Object.entries(details).forEach(([key, value]) => {
-        if (typeof value === 'object') {
-          Object.entries(value).forEach(([subKey, subValue]) => {
-            wsData.push(["", "", "", "", "", ""]);
-            wsData.push([key, subKey, unit, subValue, "Precio Unitario", "Precio Total", "0%", "Total Determinado"]);
-          });
-        } else {
-          wsData.push([key, "", unit, value, "Precio Unitario", "Precio Total", "0%", "Total Determinado"]);
-        }
-      });
-    };
-
-    // Agregar los detalles de los elementos seleccionados
-    Object.keys(sector.details).forEach((category) => {
-      wsData.push([category, ""]);  // Agregar el nombre del elemento como sub-encabezado
-      addDetailRows(sector.details[category], "Unidad");  // Ajusta "Unidad" según sea necesario
-    });
-
-    const ws = XLSX.utils.aoa_to_sheet(wsData);
-    XLSX.utils.book_append_sheet(wb, ws, sector.category);
-  });
-
-  const wbout = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
-  const fileUri = FileSystem.documentDirectory + 'datos.xlsx';
-
-  try {
-    await FileSystem.writeAsStringAsync(fileUri, wbout, { encoding: FileSystem.EncodingType.Base64 });
-    const asset = await MediaLibrary.createAssetAsync(fileUri);
-    const album = await MediaLibrary.getAlbumAsync('Download');
-    if (album == null) {
-      await MediaLibrary.createAlbumAsync('Download', asset, false);
-    } else {
-      await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
-    }
-    alert('Datos guardados en la carpeta de Descargas');
-  } catch (error) {
-    alert('Error al guardar el archivo: ' + error.message);
-  }
-};
-
-const renderDetail = (details) => {
-  if (typeof details === 'object') {
-    return Object.entries(details).map(([key, value]) => (
-      typeof value === 'object' ? 
-        Object.entries(value).map(([subKey, subValue]) => (
-          <Text key={subKey}>{subKey}: {subValue}</Text>
-        )) :
-        <Text key={key}>{key}: {value}</Text>
-    ));
-  }
-  return <Text>{details}</Text>;
-};
+const sectorStyles = StyleSheet.create({
+  container: { flex: 1, padding: 16 },
+  tabs: { flexDirection: 'row', justifyContent: 'space-around', marginBottom: 20 },
+  tabButton: { backgroundColor: '#ddd', padding: 10, borderRadius: 5 },
+  tabButtonText: { fontSize: 16 },
+  sectionContainer: { marginBottom: 20 },
+  label: { fontSize: 16, fontWeight: 'bold', marginVertical: 10 },
+  input: { borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 8, marginBottom: 10 },
+  switchContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  dropdownContainer: { marginVertical: 10 },
+  dropdown: { borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 8, marginBottom: 10 },
+  quantityContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
+  quantityInput: { borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 8, flex: 1, marginLeft: 10 }
+});
 
 const App = () => {
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -173,6 +113,85 @@ const App = () => {
       Muros: false,
       Cielos: false
     });
+  };
+
+  const saveDataToExcel = async (sectors) => {
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+
+    if (status !== 'granted') {
+      alert('Se requieren permisos de almacenamiento para guardar el archivo.');
+      return;
+    }
+
+    const wb = XLSX.utils.book_new();
+
+    sectors.forEach((sector) => {
+      const wsData = [];
+
+      // Agregar el encabezado del sector y las medidas
+      const header = [
+        ["SECTOR", `${sector.measurements.largo} x ${sector.measurements.ancho} x ${sector.measurements.alto}`],
+      ];
+      wsData.push(...header);
+
+      // Agregar encabezados de la tabla
+      const tableHeader = [
+        ["Unidad", "Cant. Real", "Prec. Unit.", "Prec. Total", "% Dcto.", "Total Determinado"]
+      ];
+      wsData.push(...tableHeader);
+
+      // Función para agregar filas de detalles a la tabla
+      const addDetailRows = (details, unit) => {
+        Object.entries(details).forEach(([key, value]) => {
+          if (typeof value === 'object') {
+            Object.entries(value).forEach(([subKey, subValue]) => {
+              wsData.push([unit, subValue, "Precio Unitario", "Precio Total", "0%", "Total Determinado"]);
+            });
+          } else {
+            wsData.push([unit, value, "Precio Unitario", "Precio Total", "0%", "Total Determinado"]);
+          }
+        });
+      };
+
+      // Agregar los detalles de los elementos seleccionados
+      Object.keys(sector.details).forEach((category) => {
+        wsData.push([category]);  // Agregar el nombre del elemento como sub-encabezado
+        addDetailRows(sector.details[category], "Unidad");  // Ajusta "Unidad" según sea necesario
+      });
+
+      const ws = XLSX.utils.aoa_to_sheet(wsData);
+      XLSX.utils.book_append_sheet(wb, ws, sector.category);
+    });
+
+    const wbout = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
+    const fileUri = FileSystem.documentDirectory + 'datos.xlsx';
+
+    try {
+      await FileSystem.writeAsStringAsync(fileUri, wbout, { encoding: FileSystem.EncodingType.Base64 });
+      const asset = await MediaLibrary.createAssetAsync(fileUri);
+      const album = await MediaLibrary.getAlbumAsync('Download');
+      if (album == null) {
+        await MediaLibrary.createAlbumAsync('Download', asset, false);
+      } else {
+        await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
+      }
+      alert('Datos guardados en la carpeta de Descargas');
+    } catch (error) {
+      alert('Error al guardar el archivo: ' + error.message);
+    }
+  };
+
+  const renderDetail = (details) => {
+    if (typeof details === 'object') {
+      return Object.entries(details).map(([key, value]) => (
+        typeof value === 'object' ? 
+          Object.entries(value).map(([subKey, subValue]) => (
+            <Text key={subKey}>{subKey}: {subValue}</Text>
+          )) :
+          <Text key={key}>{key}: {value}</Text>
+      ));
+    }
+    return <Text>{details}</Text>;
   };
 
   return (
