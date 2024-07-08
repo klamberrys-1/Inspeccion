@@ -1,8 +1,8 @@
 import React from 'react';
+import { View, FlatList, Text, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Ionicons } from '@expo/vector-icons';
 import ClienteData from './components/ClienteData';
 import SectorDescription from './components/Sectores/SectorDescription';
 import DescripcionSiniestro from './components/Siniestro/SiniestroDescription';
@@ -11,26 +11,24 @@ import ReporteVisita from './components/ReporteVisita/ReporteVisita';
 // Crear el objeto Tab
 const Tab = createBottomTabNavigator();
 
+const SampleComponent = () => {
+  const data = [{ key: '1', value: 'Item 1' }, { key: '2', value: 'Item 2' }];
+
+  return (
+    <FlatList
+      data={data}
+      renderItem={({ item }) => <Text style={styles.item}>{item.value}</Text>}
+      keyExtractor={(item) => item.key}
+    />
+  );
+};
+
 export default function App() {
   return (
     <NavigationContainer>
       <Tab.Navigator
         screenOptions={({ route }) => ({
-          tabBarIcon: ({ focused, color, size }) => {
-            let iconName;
-
-            if (route.name === 'Datos del Cliente') {
-              iconName = focused ? 'ios-person' : 'ios-person-outline';
-            } else if (route.name === 'Descripción de Sectores') {
-              iconName = focused ? 'ios-business' : 'ios-business-outline';
-            } else if (route.name === 'Descripción del Siniestro') {
-              iconName = focused ? 'ios-alert' : 'ios-alert-outline';
-            } else if (route.name === 'Reporte de Visita') {
-              iconName = focused ? 'ios-calendar' : 'ios-calendar-outline';
-            }
-
-            return <Ionicons name={iconName} size={size} color={color} />;
-          },
+          tabBarLabel: route.name,
           tabBarActiveTintColor: '#e91e63',
           tabBarInactiveTintColor: 'gray',
           tabBarLabelStyle: { fontSize: 12 },
@@ -58,3 +56,11 @@ export default function App() {
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  item: {
+    padding: 10,
+    fontSize: 18,
+    height: 44,
+  },
+});
